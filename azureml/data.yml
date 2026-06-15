@@ -1,0 +1,13 @@
+
+$schema: https://azuremlschemas.azureedge.net/latest/data.schema.json
+
+name: creditcard-dataset
+
+version: 1
+
+type: uri_file
+
+path: azureml://datastores/workspaceblobstore/paths/data/creditcard.csv
+
+description: Credit Card Fraud Detection Dataset
+

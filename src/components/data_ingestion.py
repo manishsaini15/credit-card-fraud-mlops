@@ -2,23 +2,10 @@
 # =============================================================================
 # Data Ingestion Component
 # =============================================================================
-# This module is responsible for:
-#
-# 1. Reading the raw dataset
-# 2. Splitting the dataset into train and test sets
-# 3. Preserving class distribution using stratification
-# 4. Saving train and test datasets
-#
-# =============================================================================
 
-# -----------------------------------------------------------------------------
 # Import required libraries
-# -----------------------------------------------------------------------------
-
-# Import pandas for dataframe operations
+import os
 import pandas as pd
-
-# Import train_test_split
 from sklearn.model_selection import train_test_split
 
 # Import schema loader
@@ -35,19 +22,29 @@ class DataIngestion:
     # -------------------------------------------------------------------------
     def __init__(self):
 
-        # Load configuration
+        # Load schema configuration
         schema = load_schema()
 
-        # Artifact paths
-        self.raw_data_path = "artifacts/creditcard.csv"
+        # ---------------------------------------------------------------------
+        # Raw dataset path
+        #
+        # Local Development:
+        #     artifacts/creditcard.csv
+        #
+        # Azure ML:
+        #     RAW_DATA_PATH environment variable supplied by the job
+        # ---------------------------------------------------------------------
+        self.raw_data_path = os.getenv(
+            "RAW_DATA_PATH",
+            "artifacts/creditcard.csv"
+        )
 
+        # Artifact output paths
         self.train_data_path = schema["artifacts"]["train_data_path"]
-
         self.test_data_path = schema["artifacts"]["test_data_path"]
 
-        # Training configuration
+        # Train/test split configuration
         self.test_size = schema["test_size"]
-
         self.random_state = schema["random_state"]
 
         # Target column
@@ -62,19 +59,27 @@ class DataIngestion:
         print("STARTING DATA INGESTION")
         print("=" * 70)
 
-        # Read raw dataset
+        print(f"Reading dataset from: {self.raw_data_path}")
+
+        # Check dataset exists
+        if not os.path.exists(self.raw_data_path):
+            raise FileNotFoundError(
+                f"Dataset not found at: {self.raw_data_path}"
+            )
+
+        # Read dataset
         df = pd.read_csv(self.raw_data_path)
 
-        print(f"Dataset Shape : {df.shape}")
+        print(f"Dataset Shape: {df.shape}")
 
-        # Display original class distribution
+        # Print original class distribution
         print("\nOriginal Class Distribution:")
         print(
             df[self.target_column]
             .value_counts(normalize=True)
         )
 
-        # Split dataset
+        # Train-test split with stratification
         train_df, test_df = train_test_split(
             df,
             test_size=self.test_size,
@@ -94,14 +99,13 @@ class DataIngestion:
             index=False
         )
 
-        # Display train distribution
+        # Display distributions
         print("\nTrain Class Distribution:")
         print(
             train_df[self.target_column]
             .value_counts(normalize=True)
         )
 
-        # Display test distribution
         print("\nTest Class Distribution:")
         print(
             test_df[self.target_column]
@@ -119,18 +123,12 @@ class DataIngestion:
 # =============================================================================
 # Entry Point
 # =============================================================================
-
 if __name__ == "__main__":
 
-    # Create ingestion object
     ingestion = DataIngestion()
 
-    # Execute ingestion
-    train_path, test_path = (
-        ingestion.initiate_data_ingestion()
-    )
+    train_path, test_path = ingestion.initiate_data_ingestion()
 
-    # Print saved locations
-    print(f"\nTrain File : {train_path}")
-    print(f"Test File  : {test_path}")
+    print(f"\nTrain File: {train_path}")
+    print(f"Test File : {test_path}")
 

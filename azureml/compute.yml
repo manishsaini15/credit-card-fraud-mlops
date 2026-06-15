@@ -1,0 +1,17 @@
+$schema: https://azuremlschemas.azureedge.net/latest/amlCompute.schema.json
+
+name: cpu-cluster
+
+type: amlcompute
+
+# Small VM size
+size: STANDARD_DS2_V2
+
+# Don't keep any VM running when idle
+min_instances: 0
+
+# Only create one VM when needed
+max_instances: 1
+
+# Shut down after 2 minutes of inactivity
+idle_time_before_scale_down: 120

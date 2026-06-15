@@ -1,0 +1,25 @@
+
+name: fraud-env
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.11
+  - pip
+
+  - pip:
+      - fastapi
+      - uvicorn
+      - pandas
+      - numpy
+      - scikit-learn
+      - xgboost
+      - joblib
+      - mlflow
+      - pyyaml
+      - python-dotenv
+      - azure-ai-ml
+      - azure-identity
+

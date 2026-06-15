@@ -1,0 +1,24 @@
+
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+display_name: credit-card-fraud-training
+
+experiment_name: credit-card-fraud-detection
+
+code: ..
+
+command: >-
+  python train_pipeline.py
+
+environment: azureml:fraud-env:1
+
+compute: azureml:cpu-cluster
+
+inputs:
+  raw_data:
+    type: uri_file
+    path: azureml:creditcard-dataset:1
+
+environment_variables:
+  RAW_DATA_PATH: ${{inputs.raw_data}}
+

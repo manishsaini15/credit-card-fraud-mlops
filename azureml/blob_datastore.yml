@@ -1,0 +1,12 @@
+$schema: https://azuremlschemas.azureedge.net/latest/azureBlob.schema.json
+
+name: fraudstorage
+
+type: azure_blob
+
+account_name: ccfraudstorage2026
+
+container_name: data
+
+description: Blob datastore for Credit Card Fraud dataset
+

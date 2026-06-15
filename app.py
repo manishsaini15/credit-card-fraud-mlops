@@ -14,6 +14,7 @@ import pandas as pd
 
 # Import joblib
 import joblib
+import os
 
 # Import configuration loader
 from src.utils.config import load_schema
@@ -32,16 +33,15 @@ feature_columns = [
     if column != schema["target_column"]
 ]
 
-# Load model
+MODEL_DIR = "artifacts/model"
+
 model = joblib.load(
-    schema["artifacts"]["best_model_path"]
+    os.path.join(MODEL_DIR, "best_model.pkl")
 )
 
-# Load preprocessing pipeline
 preprocessor = joblib.load(
-    schema["artifacts"]["preprocessor_path"]
+    os.path.join(MODEL_DIR, "preprocessor.pkl")
 )
-
 # Create FastAPI app
 app = FastAPI(
     title="Credit Card Fraud Detection API",

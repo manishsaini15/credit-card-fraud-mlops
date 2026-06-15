@@ -25,6 +25,7 @@ import json
 
 # Used for file path handling
 import os
+import shutil
 
 # -----------------------------------------------------------------------------
 # Import third-party libraries
@@ -314,81 +315,65 @@ class ModelTrainer:
         # Save best model
         # ---------------------------------------------------------------------
 
+        # ---------------------------------------------------------------------
+# Save best model
+# ---------------------------------------------------------------------
+
         if best_model is None:
+            raise Exception("No model was successfully trained.")
 
-            raise Exception(
-                "No model was successfully trained."
-            )
-        # Create complete inference pipeline
-        
-        # Save model locally
-        joblib.dump(
-            best_model,
-            self.model_path
-        )
+        # Create model artifact directory
+        model_dir = os.path.join("artifacts", "model")
+        os.makedirs(model_dir, exist_ok=True)
 
-        # ---------------------------------------------------------------------
-        # Save metadata
-        # ---------------------------------------------------------------------
-
+        # Create metadata FIRST
         metadata = {
-
-            # Best selected model
             "best_model_name": best_model_name,
-
-            # Metric used for selection
             "selection_metric": selection_metric,
-
-            # Best metric value
-            "best_score": round(
-                best_score,
-                6
-            )
+            "best_score": round(best_score, 6)
         }
 
+        # Save best model
+        joblib.dump(
+            best_model,
+            os.path.join(model_dir, "best_model.pkl")
+        )
+
+        # Copy preprocessor
+        shutil.copy(
+            "artifacts/preprocessor.pkl",
+            os.path.join(model_dir, "preprocessor.pkl")
+        )
+
+        # Save metadata inside model folder
         with open(
-            self.metadata_path,
+            os.path.join(model_dir, "model_metadata.json"),
             "w"
         ) as file:
-
             json.dump(
                 metadata,
                 file,
                 indent=4
             )
 
-        # ---------------------------------------------------------------------
-        # Print summary
-        # ---------------------------------------------------------------------
+        # Optional: also save metadata at original location
+        with open(
+            self.metadata_path,
+            "w"
+        ) as file:
+            json.dump(
+                metadata,
+                file,
+                indent=4
+            )
 
         print("\n" + "=" * 70)
         print("BEST MODEL SUMMARY")
         print("=" * 70)
-
-        print(
-            f"Best Model Name : "
-            f"{best_model_name}"
-        )
-
-        print(
-            f"Selection Metric: "
-            f"{selection_metric}"
-        )
-
-        print(
-            f"Best Score      : "
-            f"{best_score:.6f}"
-        )
-
-        print(
-            f"Model Saved At  : "
-            f"{self.model_path}"
-        )
-
-        print(
-            f"Metadata Saved  : "
-            f"{self.metadata_path}"
-        )
+        print(f"Best Model Name : {best_model_name}")
+        print(f"Selection Metric: {selection_metric}")
+        print(f"Best Score      : {best_score:.6f}")
+        print(f"Model Directory : {model_dir}")
 
 
 # =============================================================================
