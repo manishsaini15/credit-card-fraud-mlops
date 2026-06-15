@@ -1,0 +1,83 @@
+name: Azure ML CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  train-and-validate:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+
+      # ----------------------------------------------------------------------
+      # Checkout repository
+      # ----------------------------------------------------------------------
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # ----------------------------------------------------------------------
+      # Setup Python
+      # ----------------------------------------------------------------------
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ----------------------------------------------------------------------
+      # Install dependencies
+      # ----------------------------------------------------------------------
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ----------------------------------------------------------------------
+      # Validate data
+      # ----------------------------------------------------------------------
+      - name: Run Data Validation
+        run: |
+          python -m src.components.data_validation
+
+      # ----------------------------------------------------------------------
+      # Run Training Pipeline
+      # ----------------------------------------------------------------------
+      - name: Train Model
+        run: |
+          python train_pipeline.py
+
+      # ----------------------------------------------------------------------
+      # Upload trained artifacts
+      # ----------------------------------------------------------------------
+      - name: Upload Model Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model-artifacts
+          path: |
+            artifacts/best_model.pkl
+            artifacts/preprocessor.pkl
+            artifacts/model_metadata.json
+
+      # ----------------------------------------------------------------------
+      # Upload MLflow database (optional)
+      # ----------------------------------------------------------------------
+      - name: Upload MLflow Database
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-db
+          path: |
+            mlflow.db

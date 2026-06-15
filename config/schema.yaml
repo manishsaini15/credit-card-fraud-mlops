@@ -1,0 +1,118 @@
+# =============================================================================
+# DATASET SCHEMA
+# =============================================================================
+
+# List of all columns in the dataset
+columns:
+  - Time
+  - V1
+  - V2
+  - V3
+  - V4
+  - V5
+  - V6
+  - V7
+  - V8
+  - V9
+  - V10
+  - V11
+  - V12
+  - V13
+  - V14
+  - V15
+  - V16
+  - V17
+  - V18
+  - V19
+  - V20
+  - V21
+  - V22
+  - V23
+  - V24
+  - V25
+  - V26
+  - V27
+  - V28
+  - Amount
+  - Class
+
+# =============================================================================
+# TARGET CONFIGURATION
+# =============================================================================
+
+# Name of target column
+target_column: Class
+
+# Allowed values in target column
+allowed_target_values:
+  - 0
+  - 1
+
+# =============================================================================
+# FEATURE ENGINEERING
+# =============================================================================
+
+# Columns that should be scaled
+scale_columns:
+  - Time
+  - Amount
+
+# =============================================================================
+# MODEL SELECTION
+# =============================================================================
+
+# Metric used to choose the best model
+# Supported values:
+# - roc_auc
+# - recall
+# - precision
+# - f1_score
+model_selection_metric: roc_auc
+
+# =============================================================================
+# MLFLOW CONFIGURATION
+# =============================================================================
+
+# MLflow experiment name
+mlflow_experiment_name: credit_card_fraud_detection
+
+# =============================================================================
+# TRAINING CONFIGURATION
+# =============================================================================
+
+# Random seed for reproducibility
+random_state: 42
+
+# Test split ratio (20%)
+test_size: 0.20
+
+# =============================================================================
+# ARTIFACT PATHS
+# =============================================================================
+
+artifacts:
+
+  train_data_path: artifacts/train.csv
+
+  test_data_path: artifacts/test.csv
+
+  preprocessor_path: artifacts/preprocessor.pkl
+
+  best_model_path: artifacts/best_model.pkl
+
+  metadata_path: artifacts/model_metadata.json
+
+# =============================================================================
+# MODEL CONFIGURATION
+# =============================================================================
+
+models:
+
+  logistic_regression:
+    enabled: true
+
+  random_forest:
+    enabled: true
+
+  xgboost:
+    enabled: true

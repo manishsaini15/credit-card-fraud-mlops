@@ -1,0 +1,21 @@
+# Environment variables
+.env
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+
+# MLflow
+mlflow.db
+mlruns/
+
+# Data
+artifacts/creditcard.csv
+artifacts/train.csv
+artifacts/test.csv
+
+infra/.terraform/
+*.tfstate
+*.tfstate.*
+infra/terraform.tfvars
