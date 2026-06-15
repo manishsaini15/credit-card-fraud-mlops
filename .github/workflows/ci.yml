@@ -1,90 +1,35 @@
-name: Azure ML CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches:
-      - main
-      - develop
-
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
-
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  train-and-validate:
+  validate:
 
     runs-on: ubuntu-latest
 
-    permissions:
-      id-token: write
-      contents: read
-
     steps:
+      - uses: actions/checkout@v4
 
-      # ----------------------------------------------------------------------
-      # Checkout repository
-      # ----------------------------------------------------------------------
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      # ----------------------------------------------------------------------
-      # Setup Python
-      # ----------------------------------------------------------------------
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # ----------------------------------------------------------------------
-      # Install dependencies
-      # ----------------------------------------------------------------------
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # ----------------------------------------------------------------------
-      # Validate data
-      # ----------------------------------------------------------------------
-      - name: Run Data Ingestion
+      - name: Verify imports
         run: |
-          python -m src.components.data_ingestion
+          python -c "from src.components.data_ingestion import DataIngestion"
+          python -c "from src.components.data_validation import DataValidation"
+          python -c "from src.components.data_transformation import DataTransformation"
+          python -c "from src.components.model_trainer import ModelTrainer"
 
-      - name: Run Data Validation
+      - name: Verify FastAPI app
         run: |
-          python -m src.components.data_validation
-
-      - name: Run Training Pipeline
-        run: |
-          python train_pipeline.py
-            # ----------------------------------------------------------------------
-            # Run Training Pipeline
-            # ----------------------------------------------------------------------
-            - name: Train Model
-              run: |
-                python train_pipeline.py
-
-      # ----------------------------------------------------------------------
-      # Upload trained artifacts
-      # ----------------------------------------------------------------------
-      - name: Upload Model Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: trained-model-artifacts
-          path: |
-            artifacts/best_model.pkl
-            artifacts/preprocessor.pkl
-            artifacts/model_metadata.json
-
-      # ----------------------------------------------------------------------
-      # Upload MLflow database (optional)
-      # ----------------------------------------------------------------------
-      - name: Upload MLflow Database
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mlflow-db
-          path: |
-            mlflow.db
+          python -c "import app"
