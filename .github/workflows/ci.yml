@@ -48,16 +48,23 @@ jobs:
       # ----------------------------------------------------------------------
       # Validate data
       # ----------------------------------------------------------------------
+      - name: Run Data Ingestion
+        run: |
+          python -m src.components.data_ingestion
+
       - name: Run Data Validation
         run: |
           python -m src.components.data_validation
 
-      # ----------------------------------------------------------------------
-      # Run Training Pipeline
-      # ----------------------------------------------------------------------
-      - name: Train Model
+      - name: Run Training Pipeline
         run: |
           python train_pipeline.py
+            # ----------------------------------------------------------------------
+            # Run Training Pipeline
+            # ----------------------------------------------------------------------
+            - name: Train Model
+              run: |
+                python train_pipeline.py
 
       # ----------------------------------------------------------------------
       # Upload trained artifacts
