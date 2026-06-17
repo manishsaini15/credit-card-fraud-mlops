@@ -1,11 +1,13 @@
-
 $schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
 
 name: fraud-env
 
-version: 1
-
-image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04
-
-conda_file: conda.yml
-
+conda_file:
+  channels:
+    - conda-forge
+  dependencies:
+    - python=3.11
+    - pip
+    - pip:
+        - azureml-inference-server-http
+        - -r requirements-prod.txt

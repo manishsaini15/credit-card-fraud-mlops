@@ -8,18 +8,7 @@ channels:
 dependencies:
   - python=3.11
   - pip
-
   - pip:
-      - fastapi
-      - uvicorn
-      - pandas
-      - numpy
-      - scikit-learn
-      - xgboost
-      - joblib
-      - mlflow
-      - pyyaml
-      - python-dotenv
-      - azure-ai-ml
-      - azure-identity
+      - azureml-inference-server-http
+      - -r requirements-prod.txt
 
